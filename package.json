@@ -1,0 +1,26 @@
+{
+  "name": "digbil_api_searsh",
+  "description": "Returns last connection date of given user.",
+  "version": "0.0.1",
+  "author": "Ashley Chang",
+  "scripts": {
+    "start": "node ./bin/www"
+    },
+  "dependencies": {
+    "body-parser": "^1.0.2",
+    "bluebird": "^2.0.0",
+    "cookie-parser": "~1.0.0",
+    "debug": "~0.7.4",
+    "digbil_api_db": "git+ssh://git@github.com:digbil/digbil_api_db.git#master",
+    "express": "~4.0.0",
+    "jade": "~1.3.0",
+    "mongoose": "~3.6.13",
+    "morgan": "~1.0.0",
+    "serve-favicon": "~2.1.3",
+    "static-favicon": "~1.0.0"
+  },
+  "engines": {
+      "node": "~0.10.0"
+  },
+  "private": true
+}

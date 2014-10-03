@@ -1,0 +1,16 @@
+extend layout
+
+block content
+
+	h1 Jade - node template engine
+	input(type='text', name='mail')
+	input(type='button', value='submit', id='Submit')
+	p
+
+	input(type='textarea', name='ans' ,id='Ans', rows='30', cols='30')
+	script(type='text/javascript')
+		$(document).ready(function(){
+		$('#Submit').click(function(){
+		$('#Ans').text('Ashley test button of submit');
+		});
+		});
