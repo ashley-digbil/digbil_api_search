@@ -2,15 +2,34 @@ extend layout
 
 block content
 
-	h1 Jade - node template engine
-	input(type='text', name='mail')
-	input(type='button', value='submit', id='Submit')
-	p
+	h1 #{title}
+	h2 User's last connection data~~~
+	p 
+	form(id='myForm')
+		label(for='input') User Email : 
+		input(type='text', name='mail', id='Mail')
+		input(type='submit', value='submit', id='Submit')
+		p
+		textarea(name='ans' ,id='Ans', readonly)
 
-	input(type='textarea', name='ans' ,id='Ans', rows='30', cols='30')
 	script(type='text/javascript')
-		$(document).ready(function(){
-		$('#Submit').click(function(){
-		$('#Ans').text('Ashley test button of submit');
-		});
-		});
+		|$(document).ready(function(){
+		|	$('#myForm').submit(function(e){
+		|		var Mail = $('#Mail').val();
+		|		$(this).ajaxSubmit({
+		|			type: 'post',
+		|			dataType: 'json',
+		|			url: '/users',
+		|			data: {'name': Mail},
+		|			success: function(data){
+		|				$('#Ans').html(data.message);
+		|			},
+		|			error: function(e){ 
+		|				$('#Ans').html(e.responseText);
+		|			}
+		|		});
+		|		$(this).resetForm();
+		|		return false;
+		|	})
+		|});
+
