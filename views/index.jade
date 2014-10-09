@@ -14,13 +14,13 @@ block content
 
 	script(type='text/javascript')
 		|$(document).ready(function(){
-		|	$('#myForm').submit(function(e){
+		|	$('#myForm').submit(function(){
 		|		var Mail = $('#Mail').val();
 		|		$(this).ajaxSubmit({
 		|			type: 'post',
 		|			dataType: 'json',
 		|			url: '/users',
-		|			data: {'name': Mail},
+		|			data: {name: Mail},
 		|			success: function(data){
 		|				$('#Ans').html(data.message);
 		|			},
