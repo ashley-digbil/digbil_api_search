@@ -15,7 +15,6 @@ module.exports.start = function(db) {
 	app.use(bodyParser.urlencoded({extended: false}));
 	app.use(express.static(path.join(__dirname, 'public')));
 
-	console.log('**connection--db**');
 	routes.route('/users')
 		.post(function getUserData(req, res) {
 			var msg = '';
@@ -140,7 +139,6 @@ module.exports.start = function(db) {
 		});
 
 	app.use(routes);
-	console.log('app.use(routes)');
 
 	/// catch 404 and forward to error handler
 	app.use(function(req, res, next) {
