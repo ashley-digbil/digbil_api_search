@@ -46,13 +46,10 @@ module.exports.start = function(db) {
 				console.log('User id : ', user.id);
 				return Promise.cast(
 					db.get_collection('session')
-					.findOne({
-						$query: {
-							'session.rights.user':user.id,
-							'session.stype':'S'
-						},
-						'$orderby': {'session.ts':-1}
-					})
+					.findOne()
+					.where('session.user', user.id)
+					.where('session.stype', 'S')
+					.sort('-session.ts')
 					.exec()
 				)
 				.then(function(session) {
@@ -179,5 +176,4 @@ module.exports.start = function(db) {
 		debug('Express server listening on port ' + server.address().port);
 		console.log('**express--start**');
 	});
-
 }
