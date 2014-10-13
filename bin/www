@@ -1,9 +1,0 @@
-#!/usr/bin/env node
-var debug = require('debug')('digbil_api_searsh');
-var app = require('../app');
-
-//app.set('port', process.env.PORT || 3000);
-
-// ifconfvar server = app.listen(app.get('port'), function() {
-//  debug('Express server listening on port ' + server.address().port);
-// });
