@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
@@ -6,6 +8,8 @@ var routes = require('./routes/index');
 var debug = require('debug')('digbil_api_searsh');
 var Promise = require('bluebird');
 var app = express();
+
+Promise.longStackTraces();
 
 module.exports.start = function(db) {
 	app.set('views', path.join(__dirname, 'views'));
@@ -24,29 +28,31 @@ module.exports.start = function(db) {
 			console.log('userMail:', userMail);
 			var user = Promise.cast(
 				db.get_collection('userprofile')
-				.findOne()
-				.where('email.addr', userMail)
+				.find()
+				.where({'email.addr':userMail})
+				.sort('-ddate')
 				.exec()
 			)
 			.then(function(userProfile){
-				if(userProfile) {
-					msg += 'The user id is : '+ userProfile._id+ '\n';
-					if(userProfile.ddate){
-						throw Error('Deleted user on '+ userProfile.ddate);
-					}else{
-						return userProfile;
-					}
-				}else{
+				if(userProfile.length ==0) {
 					throw new Error('No user found for email : '+ userMail);
+				}else{
+					if(userProfile[0]._id) {
+						msg += 'The user id is : '+ userProfile[0]._id+ '\n';
+						if(userProfile[0].ddate){
+							throw Error('Deleted user on '+ userProfile[0].ddate);
+						}else{
+							return userProfile;
+						}
+					}
 				}
 			})
 
 			var sessionTime = user.then(function(user) {
-				console.log('User id : ', user.id);
 				return Promise.cast(
 					db.get_collection('session')
 					.findOne()
-					.where('session.user', user.id)
+					.where('session.user', user[0]._id)
 					.where('session.stype', 'S')
 					.sort('-session.ts')
 					.exec()
@@ -66,7 +72,7 @@ module.exports.start = function(db) {
 				return Promise.cast(
 					db.get_collection('media')
 					.find()
-					.where('user', user.id)
+					.where('user', user[0]._id)
 					.count()
 					.exec()
 				)
@@ -80,7 +86,7 @@ module.exports.start = function(db) {
 				return Promise.cast(
 					db.get_collection('deck')
 					.find()
-					.where('user', user.id)
+					.where('user', user[0]._id)
 					.count()
 					.exec()
 				)
@@ -94,7 +100,7 @@ module.exports.start = function(db) {
 				return Promise.cast(
 					db.get_collection('player')
 					.find()
-					.where('user' ,user.id)
+					.where('user' ,user[0]._id)
 					.count()
 					.exec()
 				)
@@ -108,7 +114,7 @@ module.exports.start = function(db) {
 				return Promise.cast(
 					db.get_collection('layout')
 					.find()
-					.where('user', user.id)
+					.where('user', user[0]._id)
 					.count()
 					.exec()
 				)
@@ -120,7 +126,8 @@ module.exports.start = function(db) {
 
 			Promise.all([sessionTime, mediaCount, deckCount, playerCount, layoutCount])
 			.spread(function(sessionTime,mediaCount,deckCount,playerCount,layoutCount) {
-				var msg = 'last session time is : '+ sessionTime+ '\n'+
+				var msg = 'The user mail is : '+userMail+ '\n'+
+					'last session time is : '+ sessionTime+ '\n'+
 					'media count is : '+ mediaCount+ '\n' +
 					'deck count is : '+ deckCount+ '\n' +
 					'player count is : '+ playerCount+ '\n' +
@@ -133,7 +140,8 @@ module.exports.start = function(db) {
 				})
 			})			
 			.catch(Error,function(e) {
-				console.log('Error catch : ', e);
+				//console.log('Error catch : ', e, e.stack);
+				console.log(e);
 				res.send('The '+ e);
 			});
 		});
